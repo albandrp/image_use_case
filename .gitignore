@@ -1,0 +1,19 @@
+# Data files are not versioned (folders kept with .gitkeep)
+*.csv
+*.zip
+*.parquet
+*.json
+*.jpg
+*.jpeg
+*.png
+
+# Original Dollar Street dataset (~94 GB): keep only the empty folder
+dataset_dollarstreet/*
+!dataset_dollarstreet/.gitkeep
+
+# Resized image cache
+usecase_data/activetigger/_resized_*/
+
+.DS_Store
+__pycache__/
+.venv/
