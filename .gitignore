@@ -12,7 +12,7 @@ dataset_dollarstreet/*
 !dataset_dollarstreet/.gitkeep
 
 # Resized image cache
-usecase_data/activetigger/_resized_*/
+usecase_data/_resized_*/
 
 .DS_Store
 __pycache__/

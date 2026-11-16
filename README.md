@@ -12,7 +12,7 @@ The tutorial has two Active Tigger projects:
 ```
 dataset_dollarstreet/          original Dollar Street dataset (not modified)
 src/prepare_activetigger.py    prepares the data for Active Tigger
-usecase_data/activetigger/     output, ready to upload to Active Tigger
+usecase_data/                  output, ready to upload to Active Tigger
 ```
 
 ## Requirements
@@ -38,7 +38,7 @@ It takes about 45 seconds. Options:
 | `--no-video` | off | leave out still frames taken from Dollar Street videos |
 | `--seed` | 42 | random seed for the image sample and the split |
 
-Resized images are cached in `usecase_data/activetigger/_resized_<max-side>/`. You can delete this folder; the script rebuilds it.
+Resized images are cached in `usecase_data/_resized_<max-side>/`. You can delete this folder; the script rebuilds it.
 
 ## Output
 

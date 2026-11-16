@@ -5,7 +5,7 @@
 """Prepare Dollar Street data for an Active Tigger image tutorial.
 
 Builds two ready-to-upload Active Tigger image projects in
-usecase_data/activetigger/:
+usecase_data/:
 
   1_toilet_detection/   ~12k images: every toilet image + a random sample of other images
   2_toilet_income/      only the toilet images, for income prediction / sanitation coding
@@ -36,7 +36,7 @@ from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent  # project root (scripts live in src/)
 SRC = ROOT / "dataset_dollarstreet"
-OUT = ROOT / "usecase_data" / "activetigger"
+OUT = ROOT / "usecase_data"
 
 TOILET_TOPICS = {"toilet", "bathroom/toilet", "using toilet"}
 # Images about toilets but not clearly showing one: left out of the detection
