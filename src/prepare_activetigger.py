@@ -17,7 +17,8 @@ imported into a scheme or used to evaluate annotations.
   1_toilet_detection/all.zip    -> single dataset; set the test size in Active
                                    Tigger (random per-image split)
   2_toilet_income/train.zip     -> project data, split by HOUSEHOLD (`place`)
-  2_toilet_income/test.zip      -> add as the image test set (no household in both)
+  2_toilet_income/valid.zip     -> add as the image validation set
+  2_toilet_income/test.zip      -> add as the image test set (no household in two sets)
   2_toilet_income/all.zip       -> same images in one zip, to let Active Tigger
                                    split randomly and compare: images of the same
                                    household on both sides inflate the test score
@@ -100,7 +101,8 @@ def write_zip(path, rows, img_dir):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--n-images", type=int, default=12000, help="total images in the detection project (train+test)")
-    p.add_argument("--test-frac", type=float, default=0.2, help="share of households put in the test set")
+    p.add_argument("--test-frac", type=float, default=0.15, help="share of households put in the test set")
+    p.add_argument("--valid-frac", type=float, default=0.15, help="share of households put in the validation set")
     p.add_argument("--max-side", type=int, default=512, help="resize so the longest side is this many px")
     p.add_argument("--quality", type=int, default=85, help="JPEG quality")
     p.add_argument("--no-video", action="store_true", help="exclude video preview frames")
@@ -129,9 +131,12 @@ def main():
     # --- household split (shared by both projects) -----------------------
     places = sorted({r["place"] for r in rows})
     rng.shuffle(places)
-    test_places = set(places[: round(len(places) * args.test_frac)])
+    n_test = round(len(places) * args.test_frac)
+    n_valid = round(len(places) * args.valid_frac)
+    place_split = {p: "test" for p in places[:n_test]}
+    place_split.update({p: "valid" for p in places[n_test : n_test + n_valid]})
     for r in rows:
-        r["split"] = "test" if r["place"] in test_places else "train"
+        r["split"] = place_split.get(r["place"], "train")
 
     # --- project selections ----------------------------------------------
     positives = [r for r in rows if r["toilet"] == "toilet"]
@@ -162,8 +167,8 @@ def main():
         "2_toilet_income": (income, ["id", "income_class", "income", "country", "place", "topics"]),
     }
     # detection: one zip, let Active Tigger make the (random, per-image) split.
-    # income: household split (train/test) + one zip, to compare and show leakage.
-    splits = {"1_toilet_detection": ["all"], "2_toilet_income": ["train", "test", "all"]}
+    # income: household split (train/valid/test) + one zip, to compare and show leakage.
+    splits = {"1_toilet_detection": ["all"], "2_toilet_income": ["train", "valid", "test", "all"]}
     for name, (sel, label_cols) in projects.items():
         d = OUT / name
         d.mkdir(parents=True, exist_ok=True)
@@ -184,7 +189,7 @@ def main():
         for lab, lo, hi in zip(labels, [None] + q, q + [None])
     )
     print(f"\nIncome classes ($/month, equal-size groups of households): {cuts}")
-    print(f"Test households: {len(test_places)}/{len(places)}")
+    print(f"Households: {len(places) - n_test - n_valid} train / {n_valid} valid / {n_test} test")
     print(f"Output: {OUT}")
 
 
